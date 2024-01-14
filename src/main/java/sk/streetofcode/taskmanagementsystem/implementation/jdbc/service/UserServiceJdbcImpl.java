@@ -29,7 +29,7 @@ public class UserServiceJdbcImpl implements UserService {
 
     @Override
     public User get(long id) {
-        return null;
+        return repository.getById(id);
     }
 
     @Override
