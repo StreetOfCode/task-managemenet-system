@@ -6,6 +6,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import sk.streetofcode.taskmanagementsystem.api.exception.InternalErrorException;
+import sk.streetofcode.taskmanagementsystem.api.exception.ResourceNotFoundException;
 import sk.streetofcode.taskmanagementsystem.domain.User;
 import sk.streetofcode.taskmanagementsystem.implementation.jdbc.mapper.UserRowMapper;
 
@@ -40,10 +42,10 @@ public class UserJdbcRepository {
         try {
             return jdbcTemplate.queryForObject(GET_BY_ID, userRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            throw new ResourceNotFoundException("User with id " + id + " not found");
         } catch (DataAccessException e) {
             logger.error("Error while getting user", e);
-            return null;
+            throw new InternalErrorException("Error while getting user");
         }
     }
 }
