@@ -1,11 +1,10 @@
 package sk.streetofcode.taskmanagementsystem.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sk.streetofcode.taskmanagementsystem.api.UserService;
+import sk.streetofcode.taskmanagementsystem.api.request.UserAddRequest;
 import sk.streetofcode.taskmanagementsystem.domain.User;
 
 import java.util.List;
@@ -27,5 +26,10 @@ public class UserController {
     @GetMapping("{id}")
     public ResponseEntity<User> get(@PathVariable("id") long id) {
         return ResponseEntity.ok().body(userService.get(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<Long> add(@RequestBody UserAddRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.add(request));
     }
 }

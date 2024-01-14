@@ -19,7 +19,7 @@ public class UserServiceJdbcImpl implements UserService {
 
     @Override
     public long add(UserAddRequest request) {
-        return 0;
+        return repository.add(request);
     }
 
     @Override
