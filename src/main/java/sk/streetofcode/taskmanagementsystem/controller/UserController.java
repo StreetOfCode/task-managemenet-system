@@ -32,4 +32,11 @@ public class UserController {
     public ResponseEntity<Long> add(@RequestBody UserAddRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.add(request));
     }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
+        // TODO delete all projects and tasks of user
+        userService.delete(id);
+        return ResponseEntity.ok().build();
+    }
 }
