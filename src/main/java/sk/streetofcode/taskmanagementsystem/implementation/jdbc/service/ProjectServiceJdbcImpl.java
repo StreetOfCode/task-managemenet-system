@@ -5,11 +5,21 @@ import sk.streetofcode.taskmanagementsystem.api.ProjectService;
 import sk.streetofcode.taskmanagementsystem.api.request.ProjectAddRequest;
 import sk.streetofcode.taskmanagementsystem.api.request.ProjectEditRequest;
 import sk.streetofcode.taskmanagementsystem.domain.Project;
+import sk.streetofcode.taskmanagementsystem.implementation.jdbc.repository.ProjectJdbcRepository;
+import sk.streetofcode.taskmanagementsystem.implementation.jdbc.repository.UserJdbcRepository;
 
 import java.util.List;
 
 @Service
 public class ProjectServiceJdbcImpl implements ProjectService {
+    private final ProjectJdbcRepository repository;
+    private final UserJdbcRepository userJdbcRepository;
+
+    public ProjectServiceJdbcImpl(ProjectJdbcRepository repository, UserJdbcRepository userJdbcRepository) {
+        this.repository = repository;
+        this.userJdbcRepository = userJdbcRepository;
+    }
+
     @Override
     public long add(ProjectAddRequest request) {
         return 0;
@@ -27,16 +37,20 @@ public class ProjectServiceJdbcImpl implements ProjectService {
 
     @Override
     public Project get(long id) {
-        return null;
+        return repository.getById(id);
     }
 
     @Override
     public List<Project> getAll() {
-        return null;
+        return repository.getAll();
     }
 
     @Override
     public List<Project> getAllByUser(long userId) {
+        if (userJdbcRepository.getById(userId) != null) {
+            return repository.getAllByUser(userId);
+        }
+
         return null;
     }
 }
