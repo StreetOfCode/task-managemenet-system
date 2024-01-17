@@ -6,6 +6,7 @@ import sk.streetofcode.taskmanagementsystem.api.request.ProjectAddRequest;
 import sk.streetofcode.taskmanagementsystem.api.request.ProjectEditRequest;
 import sk.streetofcode.taskmanagementsystem.domain.Project;
 import sk.streetofcode.taskmanagementsystem.implementation.jdbc.repository.ProjectJdbcRepository;
+import sk.streetofcode.taskmanagementsystem.implementation.jdbc.repository.TaskJdbcRepository;
 import sk.streetofcode.taskmanagementsystem.implementation.jdbc.repository.UserJdbcRepository;
 
 import java.util.List;
@@ -14,10 +15,12 @@ import java.util.List;
 public class ProjectServiceJdbcImpl implements ProjectService {
     private final ProjectJdbcRepository repository;
     private final UserJdbcRepository userJdbcRepository;
+    private final TaskJdbcRepository taskJdbcRepository;
 
-    public ProjectServiceJdbcImpl(ProjectJdbcRepository repository, UserJdbcRepository userJdbcRepository) {
+    public ProjectServiceJdbcImpl(ProjectJdbcRepository repository, UserJdbcRepository userJdbcRepository, TaskJdbcRepository taskJdbcRepository) {
         this.repository = repository;
         this.userJdbcRepository = userJdbcRepository;
+        this.taskJdbcRepository = taskJdbcRepository;
     }
 
     @Override
@@ -35,7 +38,7 @@ public class ProjectServiceJdbcImpl implements ProjectService {
     @Override
     public void delete(long id) {
         if (this.get(id) != null) {
-            // TODO delete all tasks in project
+            taskJdbcRepository.deleteAllByProject(id);
             repository.delete(id);
         }
     }
