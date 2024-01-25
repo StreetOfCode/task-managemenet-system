@@ -2,7 +2,7 @@ package sk.streetofcode.taskmanagementsystem.implementation.jpa.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import sk.streetofcode.taskmanagementsystem.implementation.jpa.repository.UserJp
 import java.util.List;
 
 @Service
-@Primary
+@Profile("jpa")
 public class UserServiceJpaImpl implements UserService {
     private final UserJpaRepository repository;
     private static final Logger logger = LoggerFactory.getLogger(UserServiceJpaImpl.class);

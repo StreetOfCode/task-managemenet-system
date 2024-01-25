@@ -2,7 +2,7 @@ package sk.streetofcode.taskmanagementsystem.implementation.jpa.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import sk.streetofcode.taskmanagementsystem.api.ProjectService;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-@Primary
+@Profile("jpa")
 public class TaskServiceJpaImpl implements TaskService {
 
     private final TaskJpaRepository repository;

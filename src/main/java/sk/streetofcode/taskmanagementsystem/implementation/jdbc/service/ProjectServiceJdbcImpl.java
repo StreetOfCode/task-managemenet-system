@@ -1,5 +1,6 @@
 package sk.streetofcode.taskmanagementsystem.implementation.jdbc.service;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import sk.streetofcode.taskmanagementsystem.api.ProjectService;
 import sk.streetofcode.taskmanagementsystem.api.request.ProjectAddRequest;
@@ -12,6 +13,7 @@ import sk.streetofcode.taskmanagementsystem.implementation.jdbc.repository.UserJ
 import java.util.List;
 
 @Service
+@Profile("jdbc")
 public class ProjectServiceJdbcImpl implements ProjectService {
     private final ProjectJdbcRepository repository;
     private final UserJdbcRepository userJdbcRepository;
