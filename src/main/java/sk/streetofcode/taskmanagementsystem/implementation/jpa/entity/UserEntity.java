@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity(name = "user")
 @Getter
 @NoArgsConstructor
@@ -22,7 +25,19 @@ public class UserEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<ProjectEntity> projects = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<TaskEntity> tasks = new ArrayList<>();
+
     public UserEntity(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    public UserEntity(Long id, String name, String email) {
+        this.id = id;
         this.name = name;
         this.email = email;
     }

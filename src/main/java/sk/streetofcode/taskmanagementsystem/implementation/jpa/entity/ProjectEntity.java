@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "project")
 @Getter
@@ -33,7 +35,18 @@ public class ProjectEntity {
     @Column(nullable = false)
     private OffsetDateTime createdAt;
 
+    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
+    private List<TaskEntity> tasks = new ArrayList<>();
+
     public ProjectEntity(UserEntity user, String name, String description, OffsetDateTime createdAt) {
+        this.user = user;
+        this.name = name;
+        this.description = description;
+        this.createdAt = createdAt;
+    }
+
+    public ProjectEntity(long id, UserEntity user, String name, String description, OffsetDateTime createdAt) {
+        this.id = id;
         this.user = user;
         this.name = name;
         this.description = description;
