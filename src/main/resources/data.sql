@@ -3,7 +3,7 @@ create sequence project_id_seq start with 1 increment by 1;
 create sequence task_id_seq start with 1 increment by 1;
 
 -- id, name, email
-INSERT INTO user VALUES -- user je napisany ako user lebo je to reserved keyword
+INSERT INTO users VALUES -- user je napisany ako user lebo je to reserved keyword
 (next value for user_id_seq, 'Jozko Mrkvicka', 'jozko.mrkvicka@gmail.com'),
 (next value for user_id_seq, 'Maria Terezia', 'maria.terezia@gmail.com');
 -- id, user_id, name, description, created_at

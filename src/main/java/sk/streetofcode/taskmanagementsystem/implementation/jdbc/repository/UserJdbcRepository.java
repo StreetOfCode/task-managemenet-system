@@ -33,10 +33,10 @@ public class UserJdbcRepository {
 
     static {
         logger = LoggerFactory.getLogger(UserJdbcRepository.class);
-        GET_ALL = "SELECT * FROM user";
-        GET_BY_ID = "SELECT * FROM user WHERE id = ?";
-        INSERT = "INSERT INTO user(id, name, email) VALUES (next value for user_id_seq, ?, ?)";
-        DELETE = "DELETE FROM user WHERE id = ?";
+        GET_ALL = "SELECT * FROM users";
+        GET_BY_ID = "SELECT * FROM users WHERE id = ?";
+        INSERT = "INSERT INTO users(id, name, email) VALUES (next value for user_id_seq, ?, ?)";
+        DELETE = "DELETE FROM users WHERE id = ?";
     }
 
     public UserJdbcRepository(JdbcTemplate jdbcTemplate, UserRowMapper userRowMapper) {
