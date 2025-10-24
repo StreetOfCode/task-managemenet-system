@@ -1,5 +1,6 @@
 package sk.streetofcode.taskmanagementsystem.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
@@ -21,11 +22,17 @@ public class UserController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Users found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<User>> getAll() {
         return ResponseEntity.ok().body(userService.getAll());
     }
 
     @GetMapping("{id}")
+    @Operation(summary = "Get user by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User found"),
             @ApiResponse(responseCode = "404", description = "User not found"),
@@ -36,6 +43,7 @@ public class UserController {
     }
 
     @PostMapping
+    @Operation(summary = "Create a new user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User created"),
             @ApiResponse(responseCode = "400", description = "Bad request, email already exists"),
@@ -46,6 +54,7 @@ public class UserController {
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary = "Delete a user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User deleted"),
             @ApiResponse(responseCode = "404", description = "User not found"),

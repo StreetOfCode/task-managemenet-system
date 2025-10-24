@@ -1,5 +1,6 @@
 package sk.streetofcode.taskmanagementsystem.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ public class TaskController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all tasks or tasks by user or project")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Tasks found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
@@ -42,6 +44,7 @@ public class TaskController {
     }
 
     @PostMapping
+    @Operation(summary = "Create a new task")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Task created"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
@@ -51,6 +54,7 @@ public class TaskController {
     }
 
     @PutMapping("{id}")
+    @Operation(summary = "Update an existing task")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task edited"),
             @ApiResponse(responseCode = "404", description = "Task not found"),
@@ -62,6 +66,7 @@ public class TaskController {
     }
 
     @PutMapping("{id}/status")
+    @Operation(summary = "Change the status of a task")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task status changed"),
             @ApiResponse(responseCode = "404", description = "Task not found"),
@@ -73,6 +78,7 @@ public class TaskController {
     }
 
     @PutMapping("{id}/assign")
+    @Operation(summary = "Assign a task to a project")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task assigned"),
             @ApiResponse(responseCode = "400", description = "Task and project must belong to the same user"),
@@ -85,6 +91,7 @@ public class TaskController {
     }
 
     @GetMapping("{id}")
+    @Operation(summary = "Get task by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task found"),
             @ApiResponse(responseCode = "404", description = "Task not found"),
@@ -95,6 +102,7 @@ public class TaskController {
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary = "Delete a task")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task deleted"),
             @ApiResponse(responseCode = "404", description = "Task not found"),
