@@ -1,5 +1,6 @@
 package sk.streetofcode.taskmanagementsystem.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ public class ProjectController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all projects or projects by user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Projects found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
@@ -35,6 +37,7 @@ public class ProjectController {
     }
 
     @PostMapping
+    @Operation(summary = "Create a new project")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Project created"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
@@ -44,6 +47,7 @@ public class ProjectController {
     }
 
     @PutMapping("{id}")
+    @Operation(summary = "Update an existing project")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Project edited"),
             @ApiResponse(responseCode = "404", description = "Project not found"),
@@ -55,6 +59,7 @@ public class ProjectController {
     }
 
     @GetMapping("{id}")
+    @Operation(summary = "Get project by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Project found"),
             @ApiResponse(responseCode = "404", description = "Project not found"),
@@ -65,6 +70,7 @@ public class ProjectController {
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary = "Delete a project")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Project deleted"),
             @ApiResponse(responseCode = "404", description = "Project not found"),

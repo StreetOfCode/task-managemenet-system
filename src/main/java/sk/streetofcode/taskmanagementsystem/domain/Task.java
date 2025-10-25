@@ -9,6 +9,7 @@ public class Task {
     long id;
     long userId;
     Long projectId;
+    Long assignedUserId;
     String name;
     String description;
     TaskStatus status;

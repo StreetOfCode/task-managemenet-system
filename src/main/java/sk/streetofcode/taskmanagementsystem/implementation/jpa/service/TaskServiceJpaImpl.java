@@ -55,8 +55,16 @@ public class TaskServiceJpaImpl implements TaskService {
             projectEntity = new ProjectEntity(project.getId(), userEntity, project.getName(), project.getDescription(), OffsetDateTime.now());
         }
 
+        final UserEntity assignedUserEntity;
+        if (request.getAssignedUserId() == null) {
+            assignedUserEntity = null;
+        } else {
+            final User assignedUser = userService.get(request.getAssignedUserId());
+            assignedUserEntity = new UserEntity(assignedUser.getId(), assignedUser.getName(), assignedUser.getEmail());
+        }
+
         try {
-            return repository.save(new TaskEntity(userEntity, projectEntity, request.getName(), request.getDescription(), TaskStatus.NEW, OffsetDateTime.now())).getId();
+            return repository.save(new TaskEntity(userEntity, projectEntity, assignedUserEntity, request.getName(), request.getDescription(), TaskStatus.NEW, OffsetDateTime.now())).getId();
         } catch (DataAccessException e) {
             logger.error("Error while adding task", e);
             throw new InternalErrorException("Error while adding task");
@@ -69,6 +77,15 @@ public class TaskServiceJpaImpl implements TaskService {
         taskEntity.setName(request.getName());
         taskEntity.setDescription(request.getDescription());
         taskEntity.setStatus(request.getStatus());
+
+        // Handle assignedUser update
+        if (request.getAssignedUserId() == null) {
+            taskEntity.setAssignedUser(null);
+        } else {
+            final User assignedUser = userService.get(request.getAssignedUserId());
+            taskEntity.setAssignedUser(new UserEntity(assignedUser.getId(), assignedUser.getName(), assignedUser.getEmail()));
+        }
+
         repository.save(taskEntity);
     }
 
@@ -91,6 +108,20 @@ public class TaskServiceJpaImpl implements TaskService {
         final ProjectEntity projectEntity = new ProjectEntity(project.getId(), taskEntity.getUser(), project.getName(), project.getDescription(), OffsetDateTime.now());
 
         taskEntity.setProject(projectEntity);
+        repository.save(taskEntity);
+    }
+
+    @Override
+    public void assignUser(long taskId, Long assignedUserId) {
+        final TaskEntity taskEntity = repository.findById(taskId).orElseThrow(() -> new ResourceNotFoundException("Task with id " + taskId + " not found"));
+
+        if (assignedUserId == null) {
+            taskEntity.setAssignedUser(null);
+        } else {
+            final User assignedUser = userService.get(assignedUserId);
+            taskEntity.setAssignedUser(new UserEntity(assignedUser.getId(), assignedUser.getName(), assignedUser.getEmail()));
+        }
+
         repository.save(taskEntity);
     }
 
@@ -136,6 +167,7 @@ public class TaskServiceJpaImpl implements TaskService {
                 taskEntity.getId(),
                 taskEntity.getUser().getId(),
                 taskEntity.getProject() != null ? taskEntity.getProject().getId() : null,
+                taskEntity.getAssignedUser() != null ? taskEntity.getAssignedUser().getId() : null,
                 taskEntity.getName(),
                 taskEntity.getDescription(),
                 taskEntity.getStatus(),

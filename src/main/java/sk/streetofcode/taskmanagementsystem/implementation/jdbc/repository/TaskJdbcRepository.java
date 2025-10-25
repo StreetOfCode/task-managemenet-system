@@ -32,6 +32,7 @@ public class TaskJdbcRepository {
     private static final String UPDATE;
     private static final String UPDATE_STATUS;
     private static final String UPDATE_PROJECT;
+    private static final String UPDATE_ASSIGNED_USER;
     private static final String DELETE;
     private static final String GET_ALL;
     private static final String GET_BY_ID;
@@ -42,10 +43,11 @@ public class TaskJdbcRepository {
 
     static {
         logger = LoggerFactory.getLogger(TaskJdbcRepository.class);
-        INSERT = "INSERT INTO task(id, user_id, project_id, name, description, status, created_at) VALUES (next value for task_id_seq, ?, ?, ?, ?, ?, ?)";
-        UPDATE = "UPDATE task SET name = ?, description = ?, status = ? WHERE id = ?";
+        INSERT = "INSERT INTO task(id, user_id, project_id, name, description, status, created_at, assigned_user_id) VALUES (next value for task_id_seq, ?, ?, ?, ?, ?, ?, ?)";
+        UPDATE = "UPDATE task SET name = ?, description = ?, status = ?, assigned_user_id = ? WHERE id = ?";
         UPDATE_STATUS = "UPDATE task SET status = ? WHERE id = ?";
         UPDATE_PROJECT = "UPDATE task SET project_id = ? WHERE id = ?";
+        UPDATE_ASSIGNED_USER = "UPDATE task SET assigned_user_id = ? WHERE id = ?";
         DELETE = "DELETE FROM task WHERE id = ?";
         GET_ALL = "SELECT * FROM task";
         GET_BY_ID = "SELECT * FROM task WHERE id = ?";
@@ -79,6 +81,11 @@ public class TaskJdbcRepository {
                 }
                 ps.setString(5, TaskStatus.NEW.toString());
                 ps.setTimestamp(6, Timestamp.from(OffsetDateTime.now().toInstant()));
+                if (request.getAssignedUserId() != null) {
+                    ps.setLong(7, request.getAssignedUserId());
+                } else {
+                    ps.setNull(7, java.sql.Types.BIGINT);
+                }
                 return ps;
             }, keyHolder);
 
@@ -96,7 +103,7 @@ public class TaskJdbcRepository {
 
     public void update(long id, TaskEditRequest request) {
         try {
-            jdbcTemplate.update(UPDATE, request.getName(), request.getDescription(), request.getStatus().toString(), id);
+            jdbcTemplate.update(UPDATE, request.getName(), request.getDescription(), request.getStatus().toString(), request.getAssignedUserId(), id);
         } catch (DataAccessException e) {
             logger.error("Error while updating task", e);
             throw new InternalErrorException("Error while updating task");
@@ -118,6 +125,19 @@ public class TaskJdbcRepository {
         } catch (DataAccessException e) {
             logger.error("Error while updating task project", e);
             throw new InternalErrorException("Error while updating task project");
+        }
+    }
+
+    public void updateAssignedUser(long id, Long assignedUserId) {
+        try {
+            if (assignedUserId != null) {
+                jdbcTemplate.update(UPDATE_ASSIGNED_USER, assignedUserId, id);
+            } else {
+                jdbcTemplate.update(UPDATE_ASSIGNED_USER, new Object[]{null, id}, new int[]{java.sql.Types.BIGINT, java.sql.Types.BIGINT});
+            }
+        } catch (DataAccessException e) {
+            logger.error("Error while updating task assigned user", e);
+            throw new InternalErrorException("Error while updating task assigned user");
         }
     }
 

@@ -12,6 +12,7 @@ public interface TaskService {
     void edit(long taskId, TaskEditRequest request);
     void changeStatus(long taskId, TaskStatus status);
     void assign(long taskId, long projectId);
+    void assignUser(long taskId, Long assignedUserId);
     void delete(long taskId);
     Task get(long taskId);
     List<Task> getAll();

@@ -61,6 +61,19 @@ public class TaskServiceJdbcImpl implements TaskService {
     }
 
     @Override
+    public void assignUser(long taskId, Long assignedUserId) {
+        final Task task = this.get(taskId);
+
+        if (task != null) {
+            if (assignedUserId != null) {
+                // Validate that assigned user exists
+                userService.get(assignedUserId);
+            }
+            repository.updateAssignedUser(taskId, assignedUserId);
+        }
+    }
+
+    @Override
     public void delete(long taskId) {
         if (this.get(taskId) != null) {
             repository.delete(taskId);

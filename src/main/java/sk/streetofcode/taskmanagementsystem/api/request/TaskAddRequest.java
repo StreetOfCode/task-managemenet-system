@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class TaskAddRequest {
     private Long userId;
     private Long projectId;
+    private Long assignedUserId;
     private String name;
     private String description;
 }

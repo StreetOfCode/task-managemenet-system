@@ -1,5 +1,6 @@
 package sk.streetofcode.taskmanagementsystem.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import sk.streetofcode.taskmanagementsystem.api.TaskService;
 import sk.streetofcode.taskmanagementsystem.api.request.TaskAddRequest;
 import sk.streetofcode.taskmanagementsystem.api.request.TaskAssignStatusRequest;
+import sk.streetofcode.taskmanagementsystem.api.request.TaskAssignUserRequest;
 import sk.streetofcode.taskmanagementsystem.api.request.TaskChangeStatusRequest;
 import sk.streetofcode.taskmanagementsystem.api.request.TaskEditRequest;
 import sk.streetofcode.taskmanagementsystem.domain.Task;
@@ -24,6 +26,7 @@ public class TaskController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all tasks or tasks by user or project")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Tasks found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
@@ -42,6 +45,7 @@ public class TaskController {
     }
 
     @PostMapping
+    @Operation(summary = "Create a new task")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Task created"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
@@ -51,6 +55,7 @@ public class TaskController {
     }
 
     @PutMapping("{id}")
+    @Operation(summary = "Update an existing task")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task edited"),
             @ApiResponse(responseCode = "404", description = "Task not found"),
@@ -62,6 +67,7 @@ public class TaskController {
     }
 
     @PutMapping("{id}/status")
+    @Operation(summary = "Change the status of a task")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task status changed"),
             @ApiResponse(responseCode = "404", description = "Task not found"),
@@ -73,6 +79,7 @@ public class TaskController {
     }
 
     @PutMapping("{id}/assign")
+    @Operation(summary = "Assign a task to a project")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task assigned"),
             @ApiResponse(responseCode = "400", description = "Task and project must belong to the same user"),
@@ -84,7 +91,20 @@ public class TaskController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("{id}/assign-user")
+    @Operation(summary = "Assign a task to a user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task assigned to user"),
+            @ApiResponse(responseCode = "404", description = "Task or user not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<Void> assignUser(@PathVariable("id") long id, @RequestBody TaskAssignUserRequest request) {
+        taskService.assignUser(id, request.getAssignedUserId());
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("{id}")
+    @Operation(summary = "Get task by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task found"),
             @ApiResponse(responseCode = "404", description = "Task not found"),
@@ -95,6 +115,7 @@ public class TaskController {
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary = "Delete a task")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task deleted"),
             @ApiResponse(responseCode = "404", description = "Task not found"),

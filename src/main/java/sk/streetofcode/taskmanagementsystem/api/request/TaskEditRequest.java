@@ -12,4 +12,5 @@ public class TaskEditRequest {
     private String name;
     private String description;
     private TaskStatus status;
+    private Long assignedUserId;
 }
