@@ -11,6 +11,7 @@ import sk.streetofcode.taskmanagementsystem.api.exception.BadRequestException;
 import sk.streetofcode.taskmanagementsystem.api.exception.ResourceNotFoundException;
 import sk.streetofcode.taskmanagementsystem.api.request.TaskAddRequest;
 import sk.streetofcode.taskmanagementsystem.api.request.TaskAssignStatusRequest;
+import sk.streetofcode.taskmanagementsystem.api.request.TaskAssignUserRequest;
 import sk.streetofcode.taskmanagementsystem.api.request.TaskChangeStatusRequest;
 import sk.streetofcode.taskmanagementsystem.api.request.TaskEditRequest;
 import sk.streetofcode.taskmanagementsystem.domain.Task;
@@ -74,6 +75,7 @@ public class TaskIntegrationTests extends IntegrationTest {
         final TaskAddRequest addRequest = new TaskAddRequest(
                 1L,
                 1L,
+                null,  // assignedUserId
                 "name" + Math.random(),
                 null
         );
@@ -107,6 +109,7 @@ public class TaskIntegrationTests extends IntegrationTest {
         final TaskAddRequest addRequest = new TaskAddRequest(
                 1L,
                 null,
+                null,  // assignedUserId
                 "name" + Math.random(),
                 "description"
         );
@@ -186,7 +189,8 @@ public class TaskIntegrationTests extends IntegrationTest {
         final TaskEditRequest updateRequest = new TaskEditRequest(
                 "editedName",
                 "editedDescription",
-                TaskStatus.DONE
+                TaskStatus.DONE,
+                null  // assignedUserId
         );
         final ResponseEntity<Void> updateResponse = restTemplate.exchange(
                 "/task/" + id,
@@ -243,6 +247,7 @@ public class TaskIntegrationTests extends IntegrationTest {
         final TaskAddRequest addRequest = new TaskAddRequest(
                 1L,
                 null,
+                null,  // assignedUserId
                 "name",
                 "description"
         );
@@ -276,6 +281,7 @@ public class TaskIntegrationTests extends IntegrationTest {
         final TaskAddRequest addRequest = new TaskAddRequest(
                 1L,
                 null,
+                null,  // assignedUserId
                 "name",
                 "description"
         );
@@ -310,8 +316,225 @@ public class TaskIntegrationTests extends IntegrationTest {
         return new TaskAddRequest(
                 1L,
                 1L,
+                null,  // assignedUserId - null by default
                 "name" + Math.random(),
                 "description" + Math.random()
         );
+    }
+
+    @Test
+    public void insertWithAssignedUser() {
+        final TaskAddRequest addRequest = new TaskAddRequest(
+                1L,
+                1L,
+                2L,  // assignedUserId
+                "name" + Math.random(),
+                "description"
+        );
+
+        final ResponseEntity<Long> addTaskResponse = restTemplate.postForEntity(
+                "/task",
+                addRequest,
+                Long.class
+        );
+
+        Assertions.assertEquals(HttpStatus.CREATED, addTaskResponse.getStatusCode());
+        final Long id = addTaskResponse.getBody();
+        Assertions.assertNotNull(id);
+
+        final ResponseEntity<Task> getResponse = restTemplate.getForEntity(
+                "/task/" + id,
+                Task.class
+        );
+
+        Assertions.assertEquals(HttpStatus.OK, getResponse.getStatusCode());
+        Assertions.assertNotNull(getResponse.getBody());
+        Assertions.assertEquals(id, getResponse.getBody().getId());
+        Assertions.assertEquals(2L, getResponse.getBody().getAssignedUserId());
+    }
+
+    @Test
+    public void insertWithoutAssignedUser() {
+        final TaskAddRequest addRequest = new TaskAddRequest(
+                1L,
+                1L,
+                null,  // assignedUserId - null
+                "name" + Math.random(),
+                "description"
+        );
+
+        final ResponseEntity<Long> addTaskResponse = restTemplate.postForEntity(
+                "/task",
+                addRequest,
+                Long.class
+        );
+
+        Assertions.assertEquals(HttpStatus.CREATED, addTaskResponse.getStatusCode());
+        final Long id = addTaskResponse.getBody();
+        Assertions.assertNotNull(id);
+
+        final ResponseEntity<Task> getResponse = restTemplate.getForEntity(
+                "/task/" + id,
+                Task.class
+        );
+
+        Assertions.assertEquals(HttpStatus.OK, getResponse.getStatusCode());
+        Assertions.assertNotNull(getResponse.getBody());
+        Assertions.assertNull(getResponse.getBody().getAssignedUserId());
+    }
+
+    @Test
+    public void assignUserToTask() {
+        final TaskAddRequest addRequest = new TaskAddRequest(
+                1L,
+                null,
+                null,  // No assigned user initially
+                "name",
+                "description"
+        );
+        final long id = insertTask(addRequest);
+
+        // Assign user
+        final TaskAssignUserRequest assignRequest = new TaskAssignUserRequest(2L);
+        final ResponseEntity<Void> assignResponse = restTemplate.exchange(
+                "/task/" + id + "/assign-user",
+                HttpMethod.PUT,
+                new HttpEntity<>(assignRequest),
+                Void.class
+        );
+        Assertions.assertEquals(HttpStatus.OK, assignResponse.getStatusCode());
+
+        // Verify assignment
+        final ResponseEntity<Task> getResponse = restTemplate.getForEntity(
+                "/task/" + id,
+                Task.class
+        );
+        Assertions.assertEquals(HttpStatus.OK, getResponse.getStatusCode());
+        Assertions.assertNotNull(getResponse.getBody());
+        Assertions.assertEquals(2L, getResponse.getBody().getAssignedUserId());
+    }
+
+    @Test
+    public void changeAssignedUser() {
+        final TaskAddRequest addRequest = new TaskAddRequest(
+                1L,
+                null,
+                1L,  // Initially assigned to user 1
+                "name",
+                "description"
+        );
+        final long id = insertTask(addRequest);
+
+        // Change assigned user to user 2
+        final TaskAssignUserRequest assignRequest = new TaskAssignUserRequest(2L);
+        final ResponseEntity<Void> assignResponse = restTemplate.exchange(
+                "/task/" + id + "/assign-user",
+                HttpMethod.PUT,
+                new HttpEntity<>(assignRequest),
+                Void.class
+        );
+        Assertions.assertEquals(HttpStatus.OK, assignResponse.getStatusCode());
+
+        // Verify new assignment
+        final ResponseEntity<Task> getResponse = restTemplate.getForEntity(
+                "/task/" + id,
+                Task.class
+        );
+        Assertions.assertEquals(HttpStatus.OK, getResponse.getStatusCode());
+        Assertions.assertNotNull(getResponse.getBody());
+        Assertions.assertEquals(2L, getResponse.getBody().getAssignedUserId());
+    }
+
+    @Test
+    public void unassignUser() {
+        final TaskAddRequest addRequest = new TaskAddRequest(
+                1L,
+                null,
+                1L,  // Initially assigned to user 1
+                "name",
+                "description"
+        );
+        final long id = insertTask(addRequest);
+
+        // Unassign user (set to null)
+        final TaskAssignUserRequest assignRequest = new TaskAssignUserRequest(null);
+        final ResponseEntity<Void> assignResponse = restTemplate.exchange(
+                "/task/" + id + "/assign-user",
+                HttpMethod.PUT,
+                new HttpEntity<>(assignRequest),
+                Void.class
+        );
+        Assertions.assertEquals(HttpStatus.OK, assignResponse.getStatusCode());
+
+        // Verify unassignment
+        final ResponseEntity<Task> getResponse = restTemplate.getForEntity(
+                "/task/" + id,
+                Task.class
+        );
+        Assertions.assertEquals(HttpStatus.OK, getResponse.getStatusCode());
+        Assertions.assertNotNull(getResponse.getBody());
+        Assertions.assertNull(getResponse.getBody().getAssignedUserId());
+    }
+
+    @Test
+    public void assignNonExistentUser() {
+        final TaskAddRequest addRequest = new TaskAddRequest(
+                1L,
+                null,
+                null,
+                "name",
+                "description"
+        );
+        final long id = insertTask(addRequest);
+
+        // Try to assign non-existent user
+        final TaskAssignUserRequest assignRequest = new TaskAssignUserRequest(999L);
+        final ResponseEntity<ResourceNotFoundException> assignResponse = restTemplate.exchange(
+                "/task/" + id + "/assign-user",
+                HttpMethod.PUT,
+                new HttpEntity<>(assignRequest),
+                ResourceNotFoundException.class
+        );
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, assignResponse.getStatusCode());
+    }
+
+    @Test
+    public void updateTaskWithAssignedUser() {
+        final TaskAddRequest addRequest = new TaskAddRequest(
+                1L,
+                1L,
+                null,  // No assigned user initially
+                "name" + Math.random(),
+                "description" + Math.random()
+        );
+        final long id = insertTask(addRequest);
+
+        // Update task and assign user
+        final TaskEditRequest updateRequest = new TaskEditRequest(
+                "editedName",
+                "editedDescription",
+                TaskStatus.DONE,
+                2L  // Assign to user 2
+        );
+        final ResponseEntity<Void> updateResponse = restTemplate.exchange(
+                "/task/" + id,
+                HttpMethod.PUT,
+                new HttpEntity<>(updateRequest),
+                Void.class
+        );
+        Assertions.assertEquals(HttpStatus.OK, updateResponse.getStatusCode());
+
+        // Verify update and assignment
+        final ResponseEntity<Task> getResponse = restTemplate.getForEntity(
+                "/task/" + id,
+                Task.class
+        );
+        Assertions.assertEquals(HttpStatus.OK, getResponse.getStatusCode());
+        Assertions.assertNotNull(getResponse.getBody());
+        Assertions.assertEquals(id, getResponse.getBody().getId());
+        Assertions.assertEquals(updateRequest.getName(), getResponse.getBody().getName());
+        Assertions.assertEquals(updateRequest.getDescription(), getResponse.getBody().getDescription());
+        Assertions.assertEquals(updateRequest.getStatus(), getResponse.getBody().getStatus());
+        Assertions.assertEquals(2L, getResponse.getBody().getAssignedUserId());
     }
 }

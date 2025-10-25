@@ -26,7 +26,9 @@ CREATE TABLE task (
   description varchar(160),
   status varchar(10) NOT NULL,
   created_at datetime NOT NULL,
+  assigned_user_id bigint,
   PRIMARY KEY (id),
   CONSTRAINT task_user_id_fk FOREIGN KEY (user_id) REFERENCES users (id),
-  CONSTRAINT task_project_id_fk FOREIGN KEY (project_id) REFERENCES project (id)
+  CONSTRAINT task_project_id_fk FOREIGN KEY (project_id) REFERENCES project (id),
+  CONSTRAINT task_assigned_user_id_fk FOREIGN KEY (assigned_user_id) REFERENCES users (id)
 );

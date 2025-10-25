@@ -15,6 +15,7 @@ public class TaskRowMapper implements RowMapper<Task> {
                 rs.getLong("id"),
                 rs.getLong("user_id"),
                 rs.getObject("project_id") != null ? rs.getLong("project_id"): null,
+                rs.getObject("assigned_user_id") != null ? rs.getLong("assigned_user_id") : null,
                 rs.getString("name"),
                 rs.getString("description"),
                 TaskStatus.fromString(rs.getString("status")),

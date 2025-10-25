@@ -28,6 +28,11 @@ public class TaskEntity {
     @Setter
     private ProjectEntity project;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_user_id", nullable = true)
+    @Setter
+    private UserEntity assignedUser;
+
     @Column(nullable = false)
     @Setter
     private String name;
@@ -44,9 +49,10 @@ public class TaskEntity {
     @Column(nullable = false)
     private OffsetDateTime createdAt;
 
-    public TaskEntity(UserEntity user, ProjectEntity project, String name, String description, TaskStatus status, OffsetDateTime createdAt) {
+    public TaskEntity(UserEntity user, ProjectEntity project, UserEntity assignedUser, String name, String description, TaskStatus status, OffsetDateTime createdAt) {
         this.user = user;
         this.project = project;
+        this.assignedUser = assignedUser;
         this.name = name;
         this.description = description;
         this.status = status;

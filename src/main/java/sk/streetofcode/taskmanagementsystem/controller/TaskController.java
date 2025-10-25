@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import sk.streetofcode.taskmanagementsystem.api.TaskService;
 import sk.streetofcode.taskmanagementsystem.api.request.TaskAddRequest;
 import sk.streetofcode.taskmanagementsystem.api.request.TaskAssignStatusRequest;
+import sk.streetofcode.taskmanagementsystem.api.request.TaskAssignUserRequest;
 import sk.streetofcode.taskmanagementsystem.api.request.TaskChangeStatusRequest;
 import sk.streetofcode.taskmanagementsystem.api.request.TaskEditRequest;
 import sk.streetofcode.taskmanagementsystem.domain.Task;
@@ -87,6 +88,18 @@ public class TaskController {
     })
     public ResponseEntity<Void> assign(@PathVariable("id") long id, @RequestBody TaskAssignStatusRequest request) {
         taskService.assign(id, request.getProjectId());
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("{id}/assign-user")
+    @Operation(summary = "Assign a task to a user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task assigned to user"),
+            @ApiResponse(responseCode = "404", description = "Task or user not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<Void> assignUser(@PathVariable("id") long id, @RequestBody TaskAssignUserRequest request) {
+        taskService.assignUser(id, request.getAssignedUserId());
         return ResponseEntity.ok().build();
     }
 

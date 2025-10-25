@@ -10,11 +10,11 @@ INSERT INTO users VALUES -- user je napisany ako user lebo je to reserved keywor
 INSERT INTO project VALUES
 (next value for project_id_seq, 1, 'Jozkov projekt', 'Tasky v robote', CURRENT_TIMESTAMP),
 (next value for project_id_seq, 2, 'Projekt Marie Terezie', 'Moj Todolist', CURRENT_TIMESTAMP);
--- id, user_id, project_id, name, description, status, created_at
+-- id, user_id, project_id, name, description, status, created_at, assigned_user_id
 INSERT INTO task VALUES
-(next value for task_id_seq, 1, 1, 'Spravit API', 'API ma byt pre noveho klienta', 'DONE', CURRENT_TIMESTAMP),
-(next value for task_id_seq, 1, 1, 'Otestovat API', 'Unit testy + integracne testy', 'NEW', CURRENT_TIMESTAMP),
-(next value for task_id_seq, 2, 2, 'Kupit mame darcek', null, 'NEW', CURRENT_TIMESTAMP),
-(next value for task_id_seq, 2, null, 'Zavolat do skoly', 'Cislo mam na vizitke riaditelky', 'NEW', CURRENT_TIMESTAMP);
+(next value for task_id_seq, 1, 1, 'Spravit API', 'API ma byt pre noveho klienta', 'DONE', CURRENT_TIMESTAMP, 1),
+(next value for task_id_seq, 1, 1, 'Otestovat API', 'Unit testy + integracne testy', 'NEW', CURRENT_TIMESTAMP, 2),
+(next value for task_id_seq, 2, 2, 'Kupit mame darcek', null, 'NEW', CURRENT_TIMESTAMP, null),
+(next value for task_id_seq, 2, null, 'Zavolat do skoly', 'Cislo mam na vizitke riaditelky', 'NEW', CURRENT_TIMESTAMP, 2);
 
 
